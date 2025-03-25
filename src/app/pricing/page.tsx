@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, Dispatch, SetStateAction } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import BinCard from "@/components/price/bincard";
@@ -6,6 +7,7 @@ import CustomerDetailsModal from "@/components/price/customerdetailmodel";
 import PaymentSection from "@/components/price/paymentsection";
 import { FaDumpster, FaTrashAlt, FaTruck } from "react-icons/fa";
 
+// Ensure Stripe public key is defined
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY) {
   throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined");
 }
@@ -21,9 +23,18 @@ type Bin = {
   capacity: string;
   weight: string;
   rental: string;
-  icon: JSX.Element;
+  icon: React.ReactElement;
 };
 
+// Define the CustomerDetails type for better type safety
+type CustomerDetails = {
+  wasteType: string;
+  address: string;
+  date: string;
+  time: string;
+};
+
+// Array of bins
 const bins: Bin[] = [
   { id: "mini-2m3", name: "Mini Bin 2m³", price: 30, description: "For small cleanups.", capacity: "2m³", weight: "Approx. 3 level 6x4 Trailer loads", rental: "8", icon: <FaTrashAlt className="text-4xl text-blue-400" /> },
   { id: "mini-3m3", name: "Mini Bin 3m³", price: 40, description: "For small cleanups, Wheelbarrow access.", capacity: "3m³", weight: "Approx. 4 level 6x4 Trailer loads", rental: "12", icon: <FaTrashAlt className="text-4xl text-blue-400" /> },
@@ -41,7 +52,12 @@ export default function PricingPage() {
   const [selectedBin, setSelectedBin] = useState<Bin>(bins[1]);
   const [showModal, setShowModal] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
-  const [customerDetails, setCustomerDetails] = useState({ wasteType: "", address: "", date: "", time: "" });
+  const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
+    wasteType: "",
+    address: "",
+    date: "",
+    time: "",
+  });
   const [errorMessage, setErrorMessage] = useState("");
 
   const handlePayment = () => setShowModal(true);
@@ -66,7 +82,7 @@ export default function PricingPage() {
             key={bin.id}
             bin={bin}
             selectedBin={selectedBin}
-            setSelectedBin={(newBin: Bin) => setSelectedBin(newBin)}
+            setSelectedBin={setSelectedBin as Dispatch<SetStateAction<Bin>>}
             setShowPayment={setShowPayment}
           />
         ))}
@@ -85,7 +101,13 @@ export default function PricingPage() {
           errorMessage={errorMessage}
         />
       )}
-      {showPayment && <PaymentSection stripePromise={stripePromise} selectedBin={selectedBin} customerDetails={customerDetails} />}
+      {showPayment && (
+        <PaymentSection
+          stripePromise={stripePromise}
+          selectedBin={selectedBin}
+          customerDetails={customerDetails}
+        />
+      )}
     </main>
   );
 }
