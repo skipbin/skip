@@ -8,7 +8,7 @@ import { urlFor } from "@/sanity/lib/image";
 import Head from "next/head";
 
 interface Blog {
-  description: string; // Or 'brief' if that’s your schema
+  description: string;
   slug: string;
   image: { asset: { _ref: string; _type: string }; alt?: string };
   title: string;
@@ -50,7 +50,10 @@ const Blogs: React.FC = () => {
 
   return (
     <main className="w-full mt-16 sm:mt-24 md:mt-32 px-5 sm:px-10 md:px-24 lg:px-32 flex flex-col items-center justify-center">
-      <Head>{/* Your metadata */}</Head>
+      <Head>
+        <title>Blogs Page</title>
+        <meta name="description" content="List of blog posts" />
+      </Head>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {blogs.map((blog) => (
           <div key={blog.slug} className="group flex flex-col items-center text-dark dark:text-light mb-8">
