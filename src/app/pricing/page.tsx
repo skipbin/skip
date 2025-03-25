@@ -82,7 +82,7 @@ export default function PricingPage() {
             key={bin.id}
             bin={bin}
             selectedBin={selectedBin}
-            setSelectedBin={setSelectedBin as Dispatch<SetStateAction<Bin>>}
+            setSelectedBin={(newBin: Bin) => setSelectedBin(newBin)} // Wrapped setter
             setShowPayment={setShowPayment}
           />
         ))}
